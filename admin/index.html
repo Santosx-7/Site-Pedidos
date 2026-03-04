@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Painel Admin</title>
+
+  <style>
+    /* ── TELA DE LOGIN ── */
+    #tela-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0f172a;
+    }
+
+    .login-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 48px 40px;
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+
+    .login-box h2 {
+      color: #f1f5f9;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .login-box p {
+      color: #94a3b8;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 24px;
+      background: #fff;
+      color: #1e293b;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-google:hover {
+      background: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .btn-google:active {
+      transform: translateY(0);
+    }
+
+    .btn-google svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .login-erro {
+      margin-top: 16px;
+      color: #f87171;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .mensagem-inicial {
+      text-align: center;
+      margin-top: 24px;
+      color: #f1f5f9;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+
+
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 12px;  
+    }
+
+    /* ── PAINEL (oculto até autenticado) ── */
+    #painel-admin {
+      display: none;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 16px;
+    }
+
+    .btn-logout:hover {
+      border-color: #f87171;
+      color: #f87171;
+    }
+
+    .usuario-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .usuario-foto {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       TELA DE LOGIN
+  =========================================== -->
+  <div id="tela-login">
+    <div class="login-box">
+      <div class="login-logo">⛪</div>
+      <h2>Painel Administrativo</h2>
+      <p>Acesso restrito à equipe do evento</p>
+
+      <button class="btn-google" onclick="fazerLoginGoogle()">
+        <!-- Ícone Google SVG -->
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Entrar com Google
+      </button>
+
+      <p class="login-erro" id="login-erro">❌ Acesso negado. Use a conta autorizada.</p>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       PAINEL ADMIN (visível após login)
+  =========================================== -->
+  <div id="painel-admin">
+
+    <!-- HEADER -->
+    <header class="cabecalho">
+      <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h1 class="titulo">🎯 Painel do Administrador</h1>
+        <div style="display:flex; align-items:center;">
+          <div class="estatisticas">
+            <div class="stat-item">
+              <span class="stat-label">Total de Pedidos</span>
+              <span class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Valor Faturado</span>
+              <span class="stat-value">R$ 0,00</span>
+            </div>
+            <div class="stat-item stat-destaque">
+              <span class="stat-label">Pendentes</span>
+              <span class="stat-value">0</span>
+            </div>
+          </div>
+          <div class="usuario-info" id="usuario-info" style="margin-left:24px;">
+            <img class="usuario-foto" id="usuario-foto" src="" alt="" style="display:none;" />
+            <span id="usuario-nome"></span>
+            <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filtros">
+      <div class="container">
+        <button type="button" class="filtro-btn ativo" data-status="pendente" data-emoji="🔴" data-nome="Pendentes">🔴 Pendentes (0)</button>
+        <button type="button" class="filtro-btn" data-status="preparando" data-emoji="🟡" data-nome="Preparando">🟡 Preparando (0)</button>
+        <button type="button" class="filtro-btn" data-status="pronto" data-emoji="🟢" data-nome="Prontos">🟢 Prontos (0)</button>
+        <button type="button" class="filtro-btn" data-status="entregue" data-emoji="✅" data-nome="Entregues">✅ Entregues (0)</button>
+        <button type="button" class="filtro-btn limpar" data-status="todos">🗑️ Todos</button>
+      </div>
+    </section>
+
+    <!-- PEDIDOS -->
+    <main class="container">
+      <div class="pedidos-grid">
+        <div class="mensagem-inicial">
+          <p>📦 Sem pedidos...</p>
+        </div>
+      </div>
+    </main>
+
+  </div><!-- fim #painel-admin -->
+
+  <!-- Firebase SDKs — IMPORTANTE: auth-compat adicionado -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5457ff">
+  <title>Pedido Rápido - Festa</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+</head>
+<body>
+  
+  <main class="container">
+    <div class="produtos">
+      <div class="item" data-preco="4.99">
+        <img src="./imgs/coxinha-removebg-preview.png" alt="Coxinha">
+        <h2>Coxinha</h2>
+        <p class="preco">R$ 4,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+      
+      <div class="item" data-preco="10.99">
+        <img src="./imgs/doritos-removebg-preview.png" alt="Doritos">
+        <h2>Doritos</h2>
+        <p class="preco">R$ 10,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+      
+      <div class="item" data-preco="25.99">
+        <img src="./imgs/894fbb5165f303ee3ec388c326930cf7-removebg-preview.png" alt="Frango Frito">
+        <h2>Frango Frito</h2>
+        <p class="preco">R$ 25,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+      
+      <div class="item" data-preco="9.99">
+        <img src="./imgs/coca-removebg-preview.png" alt="Coca-Cola">
+        <h2>Coca-Cola</h2>
+        <p class="preco">R$ 9,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+      
+      <div class="item" data-preco="7.99">
+        <img src="./imgs/guagua-removebg-preview.png" alt="Guaraná">
+        <h2>Guaraná</h2>
+        <p class="preco">R$ 7,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+      
+      <div class="item" data-preco="8.99">
+        <img src="./imgs/oepis-removebg-preview.png" alt="Pepsi">
+        <h2>Pepsi</h2>
+        <p class="preco">R$ 8,99</p>
+        <button type="button" class="botao-produto">Adicionar</button>
+      </div>
+    </div>
+  </main>
+
+
+  <button type="button" class="botao-carrinho-flutuante" id="btnAbrirCarrinho" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+    🛒
+    <span class="badge-carrinho oculto" id="badgeCarrinho">0</span>
+  </button>
+
+
+  <div class="overlay-carrinho" id="overlayCarrinho"></div>
+
+
+  <aside class="carrinho" id="carrinho">
+    <div class="carrinho-header">
+      <h2>Carrinho</h2>
+      <button type="button" class="botao-fechar-carrinho" id="btnFecharCarrinho">✕</button>
+    </div>
+    
+    <ul id="lista-carrinho"></ul>
+    
+    <div class="carrinho-footer">
+      <p id="total-carrinho">Total: R$ 0,00</p>
+      <button type="button" class="botao-finalizar" disabled>Finalizar Pedido</button>
+    </div>
+  </aside>
+
+  
+<aside class="checkout" id="checkout">
+  <div class="checkout-header">
+    <h2>Finalizar Pedido</h2>
+    <button type="button" class="botao-fechar-checkout" id="btnFecharCheckout">✕</button>
+  </div>
+  
+  <div class="checkout-conteudo">
+    
+    <div class="checkout-form">
+      
+      <div class="secao-pagamento">
+        <h3>Escolha a forma de pagamento:</h3>
+        <div class="metodos-pagamento">
+          <button type="button" class="metodo-btn" data-metodo="pix">
+            <span class="icone">📱</span>
+            <span>PIX</span>
+          </button>
+          <button type="button" class="metodo-btn" data-metodo="cartao">
+            <span class="icone">💳</span>
+            <span>Crédito</span>
+          </button>
+          <button type="button" class="metodo-btn" data-metodo="dinheiro">
+            <span class="icone">💳</span>
+            <span>Débito</span>
+          </button>
+        </div>
+      </div>
+
+      
+      <div class="formulario-dinamico" id="formularioDinamico">
+        <p class="texto-info">👆 Selecione uma forma de pagamento</p>
+      </div>
+
+      
+      <div class="dados-cliente">
+        <div class="campo">
+          <label for="nomeCliente">Nome:</label>
+          <input type="text" id="nomeCliente" placeholder="Digite seu nome" required>
+        </div>
+        <div class="campo">
+          <label for="mesaCliente">Mesa/Local:</label>
+          <input type="text" id="mesaCliente" placeholder="Ex: Mesa 5" required>
+        </div>
+      </div>
+
+      
+      <button type="button" class="botao-confirmar" id="btnConfirmarPedido" disabled>
+        Confirmar Pedido
+      </button>
+    </div>
+
+    
+    <div class="checkout-resumo">
+      <h3>Resumo do Pedido</h3>
+      <ul class="lista-resumo" id="listaResumo"></ul>
+      <div class="total-resumo">
+        <span>Total:</span>
+        <span id="totalResumo">R$ 0,00</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+
+<div class="confirmacao-overlay" id="confirmacaoOverlay">
+  <div class="confirmacao-modal">
+    <div class="confirmacao-icone">✅</div>
+    <h2 id="confirmacaoTitulo">Pedido Confirmado!</h2>
+    <p id="confirmacaoMensagem">Seu pedido foi recebido com sucesso!</p>
+    <p class="numero-pedido">Pedido: <strong id="numeroPedido">#0000</strong></p>
+    <button type="button" class="botao-ok" id="btnOkConfirmacao">OK</button>
+  </div>
+</div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

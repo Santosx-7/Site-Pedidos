@@ -1,0 +1,401 @@
+/* ==========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* Container centralizado */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+.cabecalho {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 24px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.cabecalho .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* permite quebra de linha no mobile */
+  gap: 20px;
+}
+
+.titulo {
+  font-size: 28px;
+  color: #333;
+  font-weight: 700;
+}
+
+/* Estatísticas */
+.estatisticas {
+  display: flex;
+  gap: 32px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* alinha à direita */
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* Destaque (Pendentes) */
+.stat-destaque .stat-value {
+  color: #ff4757;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+.filtros {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 16px 0;
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filtros .container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap; /* permite múltiplas linhas */
+  justify-content: center;
+}
+
+/* Botões de filtro */
+.filtro-btn {
+  background: white;
+  border: 2px solid #e0e0e0;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap; /* não quebra texto */
+  color: #666;
+}
+
+.filtro-btn:hover {
+  border-color: #667eea;
+  background: #f8f9ff;
+  transform: translateY(-2px);
+}
+
+.filtro-btn.ativo {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.filtro-btn.limpar {
+  background: #ff4757;
+  color: white;
+  border-color: #ff4757;
+}
+
+.filtro-btn.limpar:hover {
+  background: #ee5a6f;
+}
+
+/* ==========================================
+   GRID DE PEDIDOS
+   ========================================== */
+.pedidos-grid {
+  display: grid;
+  /* Cria colunas automáticas: mínimo 300px, máximo 1fr (espaço disponível) */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ==========================================
+   CARD DO PEDIDO
+   ========================================== */
+.card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s;
+  border-left: 6px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+/* Cores por status */
+.card.pendente { border-left-color: #ff4757; }
+.card.preparando { border-left-color: #ffa502; }
+.card.pronto { border-left-color: #26de81; }
+.card.entregue { border-left-color: #45aaf2; }
+
+/* Header do card */
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pedido-numero {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.pedido-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card.pendente .pedido-status {
+  background: #ffe5e5;
+  color: #ff4757;
+}
+
+.card.preparando .pedido-status {
+  background: #fff3e0;
+  color: #ffa502;
+}
+
+.card.pronto .pedido-status {
+  background: #e8f8f0;
+  color: #26de81;
+}
+
+.card.entregue .pedido-status {
+  background: #e3f2fd;
+  color: #45aaf2;
+}
+
+/* Body do card */
+.card-body {
+  padding: 20px;
+  flex: 1; /* ocupa espaço disponível */
+}
+
+.info-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #666;
+}
+
+.info-linha strong {
+  color: #333;
+}
+
+/* Itens */
+.itens {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.itens-titulo {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.itens p {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+/* Total */
+.total {
+  font-size: 18px;
+  color: #667eea;
+  margin: 12px 0;
+}
+
+.total strong {
+  font-weight: 700;
+}
+
+/* Pagamento */
+.pagamento {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Footer do card */
+.card-footer {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  display: flex;
+  gap: 8px;
+}
+
+/* Botões de ação */
+.btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-preparar {
+  background: #ffa502;
+  color: white;
+}
+
+.btn-preparar:hover {
+  background: #ff8c00;
+  transform: scale(1.05);
+}
+
+.btn-pronto {
+  background: #26de81;
+  color: white;
+}
+
+.btn-pronto:hover {
+  background: #20bf6b;
+  transform: scale(1.05);
+}
+
+.btn-entregar {
+  background: #45aaf2;
+  color: white;
+}
+
+.btn-entregar:hover {
+  background: #2e86de;
+  transform: scale(1.05);
+}
+
+.btn-detalhes {
+  background: white;
+  color: #333;
+  border: 2px solid #e0e0e0;
+}
+
+.btn-detalhes:hover {
+  background: #f1f2f6;
+  border-color: #667eea;
+}
+
+/* ==========================================
+   RESPONSIVO
+   ========================================== */
+
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  .cabecalho .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .titulo {
+    font-size: 22px;
+  }
+  
+  .estatisticas {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  /* Grid vira 2 colunas */
+  .pedidos-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .titulo {
+    font-size: 18px;
+  }
+  
+  .estatisticas {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .stat-item {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Grid vira 1 coluna */
+  .pedidos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filtros .container {
+    flex-direction: column;
+  }
+  
+  .filtro-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
