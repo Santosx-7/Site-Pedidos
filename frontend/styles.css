@@ -591,8 +591,6 @@ body {
   border-radius: 16px;
   padding: 24px;
   height: fit-content;
-  position: sticky;
-  top: 0;
 }
 
 .checkout-resumo h3 {
