@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   // ==========================================
+  // URL DO BACKEND
+  // ==========================================
+  const API_URL = 'http://127.0.0.1:3000';
+
+  // ==========================================
   // ELEMENTOS DO DOM
   // ==========================================
   const botoesProduto = document.querySelectorAll(".botao-produto");
@@ -29,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let carrinhoItens = [];
   let metodoSelecionado = null;
+  let pixPago = false; // controla se o checkbox PIX foi marcado
 
   // ==========================================
   // FUNÇÕES PIX
@@ -45,11 +51,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function crc16(payload) {
     const polinomio = 0x1021;
     let resultado = 0xFFFF;
-
     for (let i = 0; i < payload.length; i++) {
       resultado ^= payload.charCodeAt(i) << 8;
       for (let bit = 0; bit < 8; bit++) {
-        resultado = (resultado & 0x8000) 
+        resultado = (resultado & 0x8000)
           ? ((resultado << 1) ^ polinomio) & 0xFFFF
           : (resultado << 1) & 0xFFFF;
       }
@@ -76,14 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
       campo('58', 'BR') +
       campo('59', nomeNormalizado) +
       campo('60', cidadeNormalizada) +
-      campo('62',
-        campo('05', txid)
-      );
+      campo('62', campo('05', txid));
 
     const payloadComCRC = payload + '6304';
     const crc = crc16(payloadComCRC);
-    
-    console.log('PIX EMV gerado:', payloadComCRC + crc);
     return payloadComCRC + crc;
   }
 
@@ -140,19 +141,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     totalCarrinho.textContent = 'Total: R$ ' + total.toFixed(2);
-    
+
     const titulo = document.querySelector('.carrinho-header h2');
-    if (titulo) {
-      titulo.textContent = totalItens > 0 ? `Carrinho (${totalItens})` : 'Carrinho';
-    }
-    
+    if (titulo) titulo.textContent = totalItens > 0 ? `Carrinho (${totalItens})` : 'Carrinho';
+
     badgeCarrinho.textContent = totalItens;
     badgeCarrinho.classList.toggle('oculto', totalItens === 0);
-    
+
     const btnFinalizar = document.querySelector('.botao-finalizar');
-    if (btnFinalizar) {
-      btnFinalizar.disabled = carrinhoItens.length === 0;
-    }
+    if (btnFinalizar) btnFinalizar.disabled = carrinhoItens.length === 0;
   }
 
   // ==========================================
@@ -162,14 +159,14 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', () => {
       const item = btn.closest('.item');
       adicionarAoCarrinho(
-        item.querySelector('h2').textContent, 
+        item.querySelector('h2').textContent,
         parseFloat(item.dataset.preco)
       );
       atualizarCarrinho();
-      
+
       btn.style.background = '#3a3dfd';
       setTimeout(() => btn.style.background = '#5457ff', 200);
-      
+
       btnAbrirCarrinho.classList.add('pulse');
       setTimeout(() => btnAbrirCarrinho.classList.remove('pulse'), 400);
     });
@@ -224,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (nomeCliente) nomeCliente.value = '';
     if (mesaCliente) mesaCliente.value = '';
     metodoSelecionado = null;
+    pixPago = false;
     metodosBtns.forEach(b => b.classList.remove('ativo'));
     if (formularioDinamico) formularioDinamico.innerHTML = '<p class="texto-info">👆 Selecione uma forma de pagamento</p>';
     if (btnConfirmarPedido) btnConfirmarPedido.disabled = true;
@@ -237,14 +235,15 @@ document.addEventListener('DOMContentLoaded', function () {
       metodosBtns.forEach(b => b.classList.remove('ativo'));
       btn.classList.add('ativo');
       metodoSelecionado = btn.dataset.metodo;
+      pixPago = false; // reseta ao trocar método
 
       if (metodoSelecionado === 'pix') {
         const total = calcularTotalCarrinho();
-        
+
         const CHAVE_PIX = '55716057000183';
         const NOME_BENEFICIARIO = 'Igreja Nova Alianca de Arapongas';
         const CIDADE = 'Arapongas';
-        
+
         const pixCode = gerarPixEMV(CHAVE_PIX, NOME_BENEFICIARIO, CIDADE, total);
         const qrCodeURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixCode)}`;
 
@@ -260,16 +259,55 @@ document.addEventListener('DOMContentLoaded', function () {
             <p style="color: #666; font-size: 14px; margin: 16px 0 8px;">
               Ou copie o código PIX:
             </p>
-            <textarea 
-              readonly 
-              style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-family:monospace;font-size:12px;resize:none;height:100px;"
-              onclick="this.select();document.execCommand('copy');alert('Código PIX copiado!')"
+            <textarea
+              readonly
+              style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-family:monospace;font-size:12px;resize:none;height:80px;"
+              onclick="this.select();document.execCommand('copy');this.style.borderColor='#5457ff';"
             >${pixCode}</textarea>
-            <p style="font-size: 12px; color: #999; margin-top: 8px;">
+            <p style="font-size: 12px; color: #999; margin: 8px 0 20px;">
               👆 Clique para copiar o código
             </p>
+
+            <!-- CHECKBOX DE CONFIRMAÇÃO DE PAGAMENTO -->
+            <label id="labelPixPago" style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 12px;
+              background: #f0fdf4;
+              border: 2px solid #bbf7d0;
+              border-radius: 12px;
+              padding: 16px;
+              cursor: pointer;
+              font-size: 15px;
+              font-weight: 600;
+              color: #166534;
+              transition: all 0.2s;
+            ">
+              <input
+                type="checkbox"
+                id="checkboxPixPago"
+                style="width:20px;height:20px;cursor:pointer;accent-color:#16a34a;"
+              >
+              ✅ Já realizei o pagamento via PIX
+            </label>
           </div>
         `;
+
+        // Listener do checkbox
+        document.getElementById('checkboxPixPago').addEventListener('change', function () {
+          pixPago = this.checked;
+          const label = document.getElementById('labelPixPago');
+          if (pixPago) {
+            label.style.background = '#dcfce7';
+            label.style.borderColor = '#16a34a';
+          } else {
+            label.style.background = '#f0fdf4';
+            label.style.borderColor = '#bbf7d0';
+          }
+          validar();
+        });
+
       } else if (metodoSelecionado === 'cartao') {
         formularioDinamico.innerHTML = `
           <h4 style="margin: 0 0 16px 0; color: #333;">💳 Cartão de Crédito/Débito</h4>
@@ -283,17 +321,21 @@ document.addEventListener('DOMContentLoaded', function () {
             </p>
           </div>
         `;
+        pixPago = true; // cartão não precisa do checkbox — libera normalmente
+
       } else if (metodoSelecionado === 'dinheiro') {
         formularioDinamico.innerHTML = `
           <h4 style="margin: 0 0 16px 0; color: #333;">Pagamento em Dinheiro</h4>
           <div class="campo">
             <label>Troco para quanto? (opcional)</label>
-            <input type="number" id="trocoValor" placeholder="Ex: 50.00" step="0.01" min="0" style="padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;width:100%;">
+            <input type="number" id="trocoValor" placeholder="Ex: 50.00" step="0.01" min="0"
+              style="padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;width:100%;">
             <p style="font-size: 13px; color: #666; margin: 8px 0 0;">
               💡 Deixe em branco se não precisar de troco
             </p>
           </div>
         `;
+        pixPago = true; // dinheiro também libera normalmente
       }
 
       validar();
@@ -303,7 +345,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function validar() {
     const nomeOk = nomeCliente && nomeCliente.value && nomeCliente.value.trim();
     const mesaOk = mesaCliente && mesaCliente.value && mesaCliente.value.trim();
-    if (btnConfirmarPedido) btnConfirmarPedido.disabled = !(nomeOk && mesaOk && metodoSelecionado);
+    const pagamentoOk = metodoSelecionado && pixPago;
+    if (btnConfirmarPedido) btnConfirmarPedido.disabled = !(nomeOk && mesaOk && pagamentoOk);
   }
 
   if (nomeCliente) nomeCliente.addEventListener('input', validar);
@@ -314,56 +357,60 @@ document.addEventListener('DOMContentLoaded', function () {
   // ==========================================
   if (btnConfirmarPedido) {
     btnConfirmarPedido.addEventListener('click', async () => {
-    try {
+      try {
         btnConfirmarPedido.disabled = true;
         btnConfirmarPedido.textContent = 'Processando...';
-      
-      const dadosPedido = {
-        cliente: {
-          nome: nomeCliente.value.trim(),
-          mesa: mesaCliente.value.trim()
-        },
-        itens: carrinhoItens,
-        pagamento: {
-          metodo: metodoSelecionado,
-          detalhes: {}
-        },
-        total: calcularTotalCarrinho()
-      };
-      
-      console.log('📤 Enviando pedido:', dadosPedido);
-      
-      const response = await fetch('http://localhost:3000/api/pedidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dadosPedido)
-      });
-      
-      const resultado = await response.json();
-      
-      console.log('📥 Resposta do servidor:', resultado);
-      
-      if (!resultado.sucesso) {
-        throw new Error(resultado.erro || 'Erro ao criar pedido');
-      }
-      
-        if (confirmacaoTitulo) confirmacaoTitulo.textContent = (nomeCliente ? nomeCliente.value : '') + ', seu pedido foi feito!';
-        if (confirmacaoMensagem) confirmacaoMensagem.textContent = 'Mesa/Local: ' + (mesaCliente ? mesaCliente.value : '');
+
+        // Pega troco se for dinheiro
+        let detalhes = {};
+        if (metodoSelecionado === 'dinheiro') {
+          const trocoEl = document.getElementById('trocoValor');
+          if (trocoEl && trocoEl.value) {
+            detalhes.troco = parseFloat(trocoEl.value);
+          }
+        }
+
+        const dadosPedido = {
+          cliente: {
+            nome: nomeCliente.value.trim(),
+            mesa: mesaCliente.value.trim()
+          },
+          itens: carrinhoItens,
+          pagamento: {
+            metodo: metodoSelecionado,
+            detalhes
+          },
+          total: calcularTotalCarrinho()
+        };
+
+        console.log('📤 Enviando pedido:', dadosPedido);
+
+        const response = await fetch(`${API_URL}/api/pedidos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dadosPedido)
+        });
+
+        const resultado = await response.json();
+        console.log('📥 Resposta do servidor:', resultado);
+
+        if (!resultado.sucesso) throw new Error(resultado.erro || 'Erro ao criar pedido');
+
+        if (confirmacaoTitulo) confirmacaoTitulo.textContent = nomeCliente.value + ', seu pedido foi feito!';
+        if (confirmacaoMensagem) confirmacaoMensagem.textContent = 'Mesa/Local: ' + mesaCliente.value;
         if (numeroPedido) numeroPedido.textContent = resultado.pedido.numero;
         if (confirmacaoOverlay) confirmacaoOverlay.classList.add('ativo');
         document.body.style.overflow = 'hidden';
-      
-      console.log('✅ Pedido criado com sucesso:', resultado.pedido.numero);
-      
+
+        console.log('✅ Pedido criado com sucesso:', resultado.pedido.numero);
+
       } catch (error) {
-      console.error('❌ Erro ao enviar pedido:', error);
-      alert('❌ Erro: ' + error.message + '\n\nVerifique se o servidor está rodando!');
-    } finally {
-      btnConfirmarPedido.disabled = false;
-      btnConfirmarPedido.textContent = 'Confirmar Pedido';
-    }
+        console.error('❌ Erro ao enviar pedido:', error);
+        alert('❌ Erro: ' + error.message + '\n\nVerifique se o servidor está rodando!');
+      } finally {
+        btnConfirmarPedido.disabled = false;
+        btnConfirmarPedido.textContent = 'Confirmar Pedido';
+      }
     });
   }
 
@@ -382,7 +429,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // ==========================================
   if (btnAbrirCarrinho) btnAbrirCarrinho.addEventListener('click', abrirCarrinho);
   if (btnFecharCarrinho) btnFecharCarrinho.addEventListener('click', fecharCarrinho);
-  if (btnFecharCheckout) btnFecharCheckout.addEventListener('click', () => { if (checkout) checkout.classList.remove('aberto'); });
+  if (btnFecharCheckout) btnFecharCheckout.addEventListener('click', () => {
+    if (checkout) checkout.classList.remove('aberto');
+  });
   if (overlayCarrinho) overlayCarrinho.addEventListener('click', fecharCarrinho);
 
   document.addEventListener('keydown', (e) => {
